@@ -5,6 +5,7 @@ import com.embarkx.jobms.job.JobRepository;
 import com.embarkx.jobms.job.JobService;
 import com.embarkx.jobms.job.dto.JobWithCompanyDTO;
 import com.embarkx.jobms.job.external.Company;
+import com.embarkx.jobms.job.mapper.JobMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -34,13 +35,16 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public void createJob(Job job) {
+    public void createJob(Job job)
+    {
         jobRepository.save(job);
     }
 
     @Override
-    public Job getJobById(Long id) {
-        return jobRepository.findById(id).orElse(null);
+    public JobWithCompanyDTO getJobById(Long id)
+    {
+        Job job = jobRepository.findById(id).orElse(null);
+        return convertToDto(job);
     }
 
     @Override
@@ -70,12 +74,8 @@ public class JobServiceImpl implements JobService {
     }
 
     private JobWithCompanyDTO convertToDto(Job job){
-        JobWithCompanyDTO jobWithCompanyDTO = new JobWithCompanyDTO();
-        jobWithCompanyDTO.setJob(job);
         Company company = restTemplate.getForObject("http://localhost:8081/companies/" + job.getCompanyId(),
                 Company.class);
-        jobWithCompanyDTO.setCompany(company);
-
-        return jobWithCompanyDTO;
+        return JobMapper.mapToJobWIthCompanyDto(job, company);
     }
 }

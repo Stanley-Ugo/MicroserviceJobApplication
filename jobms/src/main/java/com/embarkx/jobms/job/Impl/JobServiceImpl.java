@@ -78,7 +78,7 @@ public class JobServiceImpl implements JobService {
     }
 
     private JobDTO convertToDto(Job job){
-        Company company = restTemplate.getForObject("http://localhost:8081/companies/" + job.getCompanyId(),
+        Company company = restTemplate.getForObject("http://COMPANY-SERVICE:8081/companies/" + job.getCompanyId(),
                 Company.class);
 
         ResponseEntity<List<Review>> reviewResponse = restTemplate.exchange("http://REVIEW-SERVICE:8083/reviews?companyId=" + job.getCompanyId(),
